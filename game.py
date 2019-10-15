@@ -1,6 +1,7 @@
 import random
 from typing import List, Dict
 
+import renderer
 from models import GameRound, GameConfig, GamePlayerRole, GuessAttempt
 from players import GamePlayer
 
@@ -28,7 +29,8 @@ class Game:
         guesser_players = [player for player_id, player in self.id_to_player.items() if
                            player_id != secret_keeper_player_id]
         print(f'Player {secret_keeper_player_id}, you have been selected to be the secret keeper for this round.')
-        print(f'Players {",".join([str(guesser_player.id) for guesser_player in guesser_players])}, you are going to guess the secret word in turns.')
+        print(f'Players {",".join([str(guesser_player.id) for guesser_player in guesser_players])}, you are going to '
+              f'guess the secret word in turns.')
         print('Let the game begin')
 
         secret_keeper_player.choose_word()
@@ -43,9 +45,13 @@ class Game:
         tries_left = self.config.num_tries_per_round
         while tries_left > 0:
             for guesser_player in guesser_players:
-                print(f'player {guesser_player.id}, it\'s your turn.')
-                print(f'Already guess chars: {",".join(game_round.get_already_guessed_characters())}')
+                input('Press any key to continue')
+                renderer.clear_screen()
+                renderer.print_hangman(game_round)
+                print(f'Player {guesser_player.id}, it\'s your turn.')
+                renderer.print_current_word(game_round)
                 guess = guesser_player.guess(game_round)
+                print(f'Player {guesser_player.id}, guessed {guess}.')
                 matched_positions = secret_keeper_player.check(game_round, guess)
                 if len(matched_positions) == 0:
                     tries_left -= 1
@@ -54,7 +60,6 @@ class Game:
                 else:
                     print(f'You guess correctly :) {guess} presents in the secret word.')
                 game_round.add_attempt(GuessAttempt(guesser_player.id, guess, matched_positions))
-                print(f'The current word is: {game_round.get_current_word_with_markup()}')
                 if game_round.has_guessed_the_word():
                     print('Guessers won this round!')
                     return game_round

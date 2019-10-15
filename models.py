@@ -41,6 +41,9 @@ class GameRound:
     def get_current_word_with_markup(self) -> str:
         return ' '.join(self.current_word_with_markup)
 
+    def get_incorrect_guesses(self) -> Set[str]:
+        return {attempt.guess for attempt in self.attempts if len(attempt.matches) == 0}
+
     def has_guessed_the_word(self) -> bool:
         return '_' not in self.current_word_with_markup
 
@@ -51,8 +54,8 @@ class GameRound:
         Besides these, if guessers win the round, each guesser gets 10 points; if secret keeper wins, it gets x points
         where x is the highest points among guessers
         """
-        secret_keeper_player_id = list(self.player_to_role.keys())[
-            list(self.player_to_role.values()).index(GamePlayerRole.SECRET_KEEPER)]
+        secret_keeper_player_id = \
+            [player_id for player_id, role in self.player_to_role.items() if role == GamePlayerRole.SECRET_KEEPER][0]
         player_to_score = {player_id: 0 for player_id in self.player_to_role.keys()}
         total_guessed_length = 0
         for attempt in self.attempts:

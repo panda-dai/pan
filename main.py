@@ -36,7 +36,7 @@ def create_players(game_config: GameConfig) -> List[GamePlayer]:
 
 
 if __name__ == '__main__':
-    config = GameConfig(3, 3, 6)
+    config = GameConfig(2, 1, 6)
     players = create_players(config)
     game = Game(config, players)
     game.start_game()
