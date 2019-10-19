@@ -33,3 +33,9 @@ def print_guesses_remaining(tries_left: int):
 
 def print_current_word(game_round: GameRound) -> None:
     print(f'The current word is: {game_round.get_current_word_with_markup()}')
+
+
+def refresh_screen(game_round: GameRound) -> None:
+    clear_screen()
+    print_hangman(game_round)
+    print_current_word(game_round)

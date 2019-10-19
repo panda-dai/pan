@@ -40,26 +40,28 @@ class Game:
                                                **{guesser_player.id: GamePlayerRole.GUESSER for guesser_player in
                                                   guesser_players}},
                                secret_word_length=secret_keeper_player.tell_word_length())
-        print(f'Word: {game_round.get_current_word_with_markup()}')
+        # renderer.refresh_screen(game_round)
 
         tries_left = self.config.num_tries_per_round
         while tries_left > 0:
             for guesser_player in guesser_players:
                 input('Press any key to continue')
-                renderer.clear_screen()
-                renderer.print_hangman(game_round)
+                renderer.refresh_screen(game_round)
                 print(f'Player {guesser_player.id}, it\'s your turn.')
-                renderer.print_current_word(game_round)
+
                 guess = guesser_player.guess(game_round)
                 print(f'Player {guesser_player.id}, guessed {guess}.')
                 matched_positions = secret_keeper_player.check(game_round, guess)
+                game_round.add_attempt(GuessAttempt(guesser_player.id, guess, matched_positions))
+                renderer.refresh_screen(game_round)
+
                 if len(matched_positions) == 0:
                     tries_left -= 1
                     print(
                         f'Wrong guess :( {guess} is not in the secret word. Guessers now have {tries_left} tries left.')
                 else:
                     print(f'You guess correctly :) {guess} presents in the secret word.')
-                game_round.add_attempt(GuessAttempt(guesser_player.id, guess, matched_positions))
+
                 if game_round.has_guessed_the_word():
                     print('Guessers won this round!')
                     return game_round

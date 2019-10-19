@@ -3,6 +3,7 @@ import requests
 import string
 from typing import List
 
+from helpers import get_input_with_validation
 from models import GameRound
 
 
@@ -36,9 +37,8 @@ class HumanGamePlayer(GamePlayer):
         return guess
 
     def choose_word(self) -> None:
-        print('Please choose a word and keep it to yourself!')
-        while input('Have you decided') != 'yes':
-            print('Please choose a word and keep it to yourself!')
+        get_input_with_validation('Please choose a word and keep it to yourself! Have you decided?',
+                                  {'yes', 'YES', 'Yes', 'Y', 'y'})
 
     def tell_word_length(self) -> int:
         return int(input('What\'s the length of the word you chose?'))
@@ -59,10 +59,9 @@ class HumanGamePlayer(GamePlayer):
 class ComputerGamePlayer(GamePlayer):
     WORD_API = 'http://app.linkedin-reach.io/words'
 
-    def __init__(self, player_id: int, name: str, difficulty: int, min_word_length: int, max_word_length: int):
+    def __init__(self, player_id: int, name: str, difficulty: int, max_word_length: int):
         super(ComputerGamePlayer, self).__init__(player_id, name)
         self.difficulty = difficulty
-        self.min_word_length = min_word_length
         self.max_word_length = max_word_length
 
     def guess(self, game_round: GameRound) -> str:
@@ -78,5 +77,5 @@ class ComputerGamePlayer(GamePlayer):
         return [position for position, letter in enumerate(self.chosen_word) if letter == guess]
 
     def load_all_words(self) -> List[str]:
-        return requests.get(self.WORD_API, {'difficulty': self.difficulty, 'minLength': self.min_word_length,
+        return requests.get(self.WORD_API, {'difficulty': self.difficulty,
                                             'maxLength': self.max_word_length}).text.split()

@@ -1,15 +1,9 @@
 from typing import List, Set
 
+from helpers import get_input_with_validation
 from game import Game
 from models import GameConfig
 from players import GamePlayer, HumanGamePlayer, ComputerGamePlayer
-
-
-def get_input_with_validation(message: str, valid_inputs: Set[str]) -> str:
-    input_str = input(message)
-    while input_str not in valid_inputs:
-        input_str = input(f'Invalid input! {message}')
-    return input_str
 
 
 def create_player(player_id: int) -> GamePlayer:
@@ -22,11 +16,9 @@ def create_player(player_id: int) -> GamePlayer:
     elif player_type == '2':
         difficulty = int(get_input_with_validation('What\'s the difficulty level for computer player? (1- 10)',
                                                [str(v) for v in list(range(1, 11))]))
-        min_word_length = int(get_input_with_validation('What\'s the min word length for computer player? (0- 10)',
-                                               [str(v) for v in list(range(0, 11))]))
-        max_word_length = int(get_input_with_validation('What\'s the max word length for computer player? (0- 10)',
-                                                    [str(v) for v in list(range(min_word_length + 1, 11))]))
-        return ComputerGamePlayer(player_id, player_name, difficulty, min_word_length, max_word_length)
+        max_word_length = int(get_input_with_validation('What\'s the max word length for computer player? (1- 20)',
+                                                    [str(v) for v in list(range(1, 21))]))
+        return ComputerGamePlayer(player_id, player_name, difficulty, max_word_length)
     else:
         raise Exception(f'Invalid player type {player_type}')
 
